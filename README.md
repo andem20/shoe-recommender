@@ -1,9 +1,2 @@
 # shoe-recommender
-
-- [ ] Collect data
-- [ ] Label data
-- [ ] Build classifier
-
-# sites
-http://zalando.dk
-https://www.boozt.com/dk/da/toej-til-maend/sko
+I'm tired of looking through hundreds of pages when finding a new pair of shoes. Therefore I've built a classifier which has learned my taste in shoes.
