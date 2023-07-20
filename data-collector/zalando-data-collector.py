@@ -6,17 +6,21 @@ import hashlib
 from PIL import Image
 import io
 
-DATA_PATH = "./data-collector/data/boozt"
+DATA_PATH = "./data-collector/data/zalando"
 
 if not os.path.exists(DATA_PATH):
     os.makedirs(DATA_PATH)
 
 def get_page(index: int):
-    URL = "https://www.boozt.com/dk/da/toej-til-maend/sko?grid=small&limit=120&page="
-    response = requests.get(URL + str(index))
+    URL = "https://www.zalando.dk/herresko/?p="
+    headers = {
+        "user-agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+    }
+
+    response = requests.get(URL + str(index), headers=headers, timeout=5)
     soup = BeautifulSoup(response.text, 'html.parser')
 
-    container = soup.find("div", "product-listing__wrapper-column product-listing__wrapper-column--main")
+    container = soup.find("div", {"data-zalon-partner-target": "true"})
 
     if container is None:
         return
@@ -38,4 +42,4 @@ def download_image(url: str):
     image.save(f"{DATA_PATH}/{id}.jpg", "jpeg")
 
 with multiprocessing.Pool(16) as pool:
-    result = pool.map(get_page, range(1, 25))
+    result = pool.map(get_page, range(1, 223))
