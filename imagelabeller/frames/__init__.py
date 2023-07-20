@@ -1,0 +1,1 @@
+from imagelabeller.frames.main_frame import MainFrame
