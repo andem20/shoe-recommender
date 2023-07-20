@@ -11,6 +11,7 @@ class MainFrame(tk.Frame):
         self.parent = parent
         self.controller = controller
         self.store = store
+        self.metadata_filename = "metadata.csv"
 
         # Labels
         self.index_label = tk.Label(self, text="")
@@ -29,6 +30,7 @@ class MainFrame(tk.Frame):
         self.export_button = tk.Button(self, text ="Export", command = self._export)
         self.export_button.grid(row = 0, column = 4, padx = 10, pady = 10)
 
+
         controller.bind("<Right>", lambda e: self._change_image(e, 1))
         controller.bind("<Left>", lambda e: self._change_image(e, -1))
         for i in range(10):
@@ -37,9 +39,16 @@ class MainFrame(tk.Frame):
     def _open_dir(self):
         path = filedialog.askdirectory()
         self.store.path = path
-        images = os.listdir(path)
-        self.store.images = images
-        self.store.labels = [0 for img in images]
+        export_file = f"{self.store.path}/{self.metadata_filename}"
+        if os.path.exists(export_file):
+            df = pd.read_csv(export_file)
+            self.store.images = df.image_url.to_list()
+            self.store.labels = df.label.to_list()
+        else:
+            images = [file for file in os.listdir(path) if file.endswith((".jpg", ".png", ".jpeg"))]
+            self.store.images = images
+            self.store.labels = [0 for _ in images]
+
         self._show_image()
 
     def _update_labels(self):
@@ -70,4 +79,4 @@ class MainFrame(tk.Frame):
 
     def _export(self):
         df = pd.DataFrame(data={"image_url": self.store.images, "label": self.store.labels})
-        df.to_csv("./data-collector/export.csv", index=False)
+        df.to_csv(f"{self.store.path}/{self.metadata_filename}", index=False)
